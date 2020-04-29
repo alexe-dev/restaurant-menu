@@ -1,36 +1,49 @@
 import Head from 'next/head'
-import { request } from '../lib/datocms'
+import { request } from '../../lib/datocms'
+import { DiscussionEmbed } from 'disqus-react'
 
-const HOMEPAGE_QUERY = `query HomePage($date: Date) {
-  dailyMenu(filter: {menuDate: {eq: $date} }) {
-    id
-    menuDate
-    dishes {
-      id
-      name
-      dishType
-      slug
-      stats {
-          group
-          fat
-          carbs
-          proteins
-          kcal
+const ALL_DISHES_QUERY = `query AllDishes {
+    allDishes {
+        id
+        slug
       }
-    }
-  }
 }`
 
-const today = new Date()
-const todayString = today.toISOString().substr(0, 10)
+const DISH_QUERY = `query Dish($slug: String) {
+    dish(filter: {slug: {eq: $slug} }) {
+        id
+        name
+        dishType
+        slug
+        stats {
+            group
+            fat
+            carbs
+            proteins
+            kcal
+        }
+      }
+}`
 
-export async function getStaticProps() {
+export async function getStaticProps({ params }) {
     const data = await request({
-        query: HOMEPAGE_QUERY,
-        variables: { date: todayString },
+        query: DISH_QUERY,
+        variables: { slug: params.slug },
     })
     return {
-        props: { data },
+        props: { slug: params.slug, data },
+    }
+}
+
+export async function getStaticPaths() {
+    const data = await request({
+        query: ALL_DISHES_QUERY,
+    })
+    return {
+        paths: data.allDishes.map((dish) => ({
+            params: { slug: dish.slug },
+        })),
+        fallback: false,
     }
 }
 
@@ -42,14 +55,8 @@ const times = {
     supper: '19:00 - 20:00',
 }
 
-const Home = ({ data }) => {
-    const menu = data.dailyMenu
-    const yesterdayString = new Date(Date.parse(todayString) - 86400000)
-        .toISOString()
-        .substr(0, 10)
-    const tomorrowString = new Date(Date.parse(todayString) + 86400000)
-        .toISOString()
-        .substr(0, 10)
+const Dish = ({ slug, data }) => {
+    const { dish } = data
     return (
         <div className="container">
             <Head>
@@ -59,33 +66,23 @@ const Home = ({ data }) => {
 
             <main>
                 <h1 className="title">NutritionPro Menu</h1>
-
-                <p className="description">
-                    <a href={`/menu/${yesterdayString}`}>{'<< '}</a>
-                    Date: {todayString}
-                    <a href={`/menu/${tomorrowString}`}>{' >>'}</a>
+                <h3>{dish.name}</h3>
+                <p>
+                    {times[dish.dishType]} {dish.dishType}
                 </p>
-                {menu ? (
-                    <div className="grid">
-                        {menu.dishes.map((dish) => (
-                            <a
-                                href={`/dishes/${dish.slug}`}
-                                className="card"
-                                key={dish.id}
-                            >
-                                <p>
-                                    {times[dish.dishType]} {dish.dishType}
-                                </p>
-                                <h3>{dish.name}</h3>
-                                <p>
-                                    {`kCal: ${dish.stats[0].kcal}, fats: ${dish.stats[0].fat}, carbs: ${dish.stats[0].carbs}, proteins: ${dish.stats[0].proteins}`}
-                                </p>
-                            </a>
-                        ))}
-                    </div>
-                ) : (
-                    'There is no menu published for this day yet'
-                )}
+                <p>
+                    {`kCal: ${dish.stats[0].kcal}, fats: ${dish.stats[0].fat}, carbs: ${dish.stats[0].carbs}, proteins: ${dish.stats[0].proteins}`}{' '}
+                </p>
+                <div className="comments">
+                    <DiscussionEmbed
+                        shortname="nutritionpro"
+                        config={{
+                            url: `https://nutritionpro.cz/hodnoceni/dish/${dish.slug}`,
+                            identifier: dish.id,
+                            title: dish.name,
+                        }}
+                    />
+                </div>
             </main>
 
             <footer>
@@ -99,7 +96,12 @@ const Home = ({ data }) => {
             </footer>
 
             <style jsx>{`
+                .comments {
+                    max-width: 100%;
+                    min-width: 60%;
+                }
                 .container {
+                    width: 100%;
                     min-height: 100vh;
                     padding: 0 0.5rem;
                     display: flex;
@@ -109,6 +111,7 @@ const Home = ({ data }) => {
                 }
 
                 main {
+                    width: 100%;
                     padding: 5rem 0;
                     flex: 1;
                     display: flex;
@@ -227,4 +230,4 @@ const Home = ({ data }) => {
     )
 }
 
-export default Home
+export default Dish

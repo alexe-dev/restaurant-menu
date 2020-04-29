@@ -5,9 +5,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "export": "next export"
   },
   "dependencies": {
+    "date-fns": "^2.12.0",
+    "disqus-react": "^1.0.8",
+    "graphql-request": "^1.8.2",
     "next": "9.3.4",
     "react": "16.13.1",
     "react-dom": "16.13.1"

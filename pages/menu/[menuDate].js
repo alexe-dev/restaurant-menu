@@ -1,7 +1,8 @@
 import Head from 'next/head'
-import { request } from '../lib/datocms'
+import { format, subDays, addDays, eachDayOfInterval } from 'date-fns'
+import { request } from '../../lib/datocms'
 
-const HOMEPAGE_QUERY = `query HomePage($date: Date) {
+const MENU_QUERY = `query MenuPage($date: Date) {
   dailyMenu(filter: {menuDate: {eq: $date} }) {
     id
     menuDate
@@ -22,15 +23,27 @@ const HOMEPAGE_QUERY = `query HomePage($date: Date) {
 }`
 
 const today = new Date()
-const todayString = today.toISOString().substr(0, 10)
 
-export async function getStaticProps() {
+export async function getStaticProps({ params }) {
     const data = await request({
-        query: HOMEPAGE_QUERY,
-        variables: { date: todayString },
+        query: MENU_QUERY,
+        variables: { date: params.menuDate },
     })
     return {
-        props: { data },
+        props: { data, date: params.menuDate },
+    }
+}
+
+export async function getStaticPaths() {
+    const dates = eachDayOfInterval({
+        start: subDays(new Date(), 30),
+        end: addDays(new Date(), 2),
+    })
+    return {
+        paths: dates.map((date) => ({
+            params: { menuDate: format(date, 'yyyy-MM-dd') },
+        })),
+        fallback: false,
     }
 }
 
@@ -42,12 +55,12 @@ const times = {
     supper: '19:00 - 20:00',
 }
 
-const Home = ({ data }) => {
-    const menu = data.dailyMenu
-    const yesterdayString = new Date(Date.parse(todayString) - 86400000)
+const MenuDate = ({ data, date }) => {
+    const menu = data && data.dailyMenu
+    const yesterdayString = new Date(Date.parse(date) - 86400000)
         .toISOString()
         .substr(0, 10)
-    const tomorrowString = new Date(Date.parse(todayString) + 86400000)
+    const tomorrowString = new Date(Date.parse(date) + 86400000)
         .toISOString()
         .substr(0, 10)
     return (
@@ -62,14 +75,14 @@ const Home = ({ data }) => {
 
                 <p className="description">
                     <a href={`/menu/${yesterdayString}`}>{'<< '}</a>
-                    Date: {todayString}
+                    Date: {date}
                     <a href={`/menu/${tomorrowString}`}>{' >>'}</a>
                 </p>
                 {menu ? (
                     <div className="grid">
                         {menu.dishes.map((dish) => (
                             <a
-                                href={`/dishes/${dish.slug}`}
+                                href={`/dish/${dish.slug}`}
                                 className="card"
                                 key={dish.id}
                             >
@@ -227,4 +240,4 @@ const Home = ({ data }) => {
     )
 }
 
-export default Home
+export default MenuDate
