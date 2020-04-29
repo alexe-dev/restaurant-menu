@@ -75,7 +75,7 @@ const Dish = ({ slug, data }) => {
                 </p>
                 <div className="comments">
                     <DiscussionEmbed
-                        shortname="restaurant_menu_test"
+                        shortname="restaurant-menu-test"
                         // change it to your website shortname (restaurant-menu-test part of  https://restaurant-menu-test.disqus.com/ in my case)
                         config={{
                             url: `https://restaurant-menu-test.com/subfolder/dish/${dish.slug}`,

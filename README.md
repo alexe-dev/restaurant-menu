@@ -8,7 +8,7 @@ For publishing new menus and dishes DatoCMS is used (it is UI friendly admin pan
 
 You should provide your DatoCMS API token (read only) in next.config.js.
 
-(you will se my token there, I added a small menu for date 2020-04-09 there so you can test it with my token first and change it to yours after you create your DatoCMS account and add content models which i describe below).
+(you will se my token there, I added a small menu for date 2020-04-09 there(http://localhost:3001/menu/2020-04-09) so you can test it with my token first and change it to yours after you create your DatoCMS account and add content models which i describe below).
 
 It is possible to generate a static website to host it easily(see steps below to generate it) or host a dynamic version.
 
