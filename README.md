@@ -8,9 +8,9 @@ For publishing new menus and dishes DatoCMS is used (it is UI friendly admin pan
 
 You should provide your DatoCMS API token (read only) in next.config.js.
 
-(you will se my token there, I added a small menu for date 2020-04-09 there(http://localhost:3001/menu/2020-04-09) so you can test it with my token first and change it to yours after you create your DatoCMS account and add content models which i describe below).
+(you will se my token there, I added a small menu for date 2020-04-09 there(can be accessed from url http://localhost:3001/menu/2020-04-09 after you run the server) so you can test it with my token first and change it to yours after you create your DatoCMS account and add content models which i describe below).
 
-It is possible to generate a static website to host it easily(see steps below to generate it) or host a dynamic version.
+It is possible to generate a static website to host it easily(see steps below to generate it) or host a dynamic version (with no need to re-generate static version on each database change (when you add new menu or dish)).
 
 Take into account that this is very early version of the project, styles are very simplistic and use styled-jsx as a solution coming with next.js, there are no tests as well as typings (I did not use typescript here but will use if I continue to develop the project).
 There is also quite a lot of duplication in the code: pages/index.js(which defaults to the menu for current date) is quite same as pages/menu/[menuDate].js(which loads the menu for a date from url), and styles are basically copy-pasted there as well as in pages/dish/[slug].js. Next step would be to intoduce a layot component and make index.js just to import component from pages/menu/[menuDate].js and provide it with current date as a prop. Feel free to contribute :)
@@ -57,7 +57,9 @@ yarn build
 yarn start
 ```
 
-you can host static build at netlify, zeit, Amazon S3 or any other static hosting solutions
+You can host static build at netlify, zeit, Amazon S3 or any other static hosting solutions.
+Make sure that your pipeline is triggered every time you add new menu or dish in your DatoCMS - it can be triggered with webhooks from there.
+if you want to bother with it - just host a dynamic version.
 
 ## Learn More
 
