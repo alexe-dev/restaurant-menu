@@ -53,7 +53,7 @@ const Home = ({ data }) => {
     return (
         <div className="container">
             <Head>
-                <title>Nutrition Pro Menu</title>
+                <title>NutritionPro Menu</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 

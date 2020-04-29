@@ -60,7 +60,7 @@ const Dish = ({ slug, data }) => {
     return (
         <div className="container">
             <Head>
-                <title>Nutrition Pro Menu</title>
+                <title>NutritionPro Menu</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
@@ -75,9 +75,11 @@ const Dish = ({ slug, data }) => {
                 </p>
                 <div className="comments">
                     <DiscussionEmbed
-                        shortname="nutritionpro"
+                        shortname="restaurant_menu_test"
+                        // change it to your website shortname (restaurant-menu-test part of  https://restaurant-menu-test.disqus.com/ in my case)
                         config={{
-                            url: `https://nutritionpro.cz/hodnoceni/dish/${dish.slug}`,
+                            url: `https://restaurant-menu-test.com/subfolder/dish/${dish.slug}`,
+                            // change it to your domain that you add in discus settings ( in this case it is https://restaurant-menu-test.com/subfolder)
                             identifier: dish.id,
                             title: dish.name,
                         }}
